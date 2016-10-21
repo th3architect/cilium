@@ -2,18 +2,56 @@
 
 ## Requirements for 1.0
 
- * Kernel (merged upstream)
-   * Perf ring buffer access
-   * Modification of packet size
-   * Skb trimming
-   * Crypto integration
-   * Fragmentation handling
- * Policy
-   * Learning capability
-   * Verification framework
-   * Add port mapping to spec
- * Load balancer
-   * ...
- * Integration
-   * CNI
-   * libnetwork
+ - [ ]  Kernel (merged upstream)
+   - [X] Perf ring buffer access
+   - [X] Modification of packet size
+   - [X] Skb trimming
+   - [ ] Crypto integration
+   - [ ] Fragmentation handling
+ - [ ] Policy
+   - [X] Ingress/consumer access based on labels
+   - [X] Distributed label to ID map
+   - [ ] Learning capability
+   - [ ] Verification suite
+   - [ ] Add port mapping to spec
+   - [ ] Egress CIDR policy
+   - [X] Kubernetes network policy integration
+   - [ ] Etcdv3 (waiting 3.1.0 release, tested with v3.1.0-rc.0)
+ - [ ] BPF Modules
+   - [X] L3
+     - [X] IPv6
+     - [X] IPv4
+   - [X] L4
+     - [X] port mapping
+   - [X] L2
+     - [X] ARP responder
+     - [X] NDISC responder
+     - [X] MAC rewrite
+   - [X] Policy
+     - [X] per CPU consumer hashtable
+   - [ ] Connection tracking
+     - [X] TCP/UDP flow tracking
+       - [X] Directional tracking SYN/REPLY
+       - [ ] TCP sequence verification
+     - [X] ICMP/NDISC
+       - [X] Expect hole punching for related errors
+     - [X] per cpu per flow statistic collection
+     - [X] NAT tracking for reverse translation
+   - [X] Encapsulation
+   - [X] Local endpoint hashtable
+   - [X] Fast packet capturing mechanism based on perf ring
+   - [X] Debugging framework based on perf ring
+ - [ ] Load balancer
+   - [X] Core
+   - [X] DSR
+   - [X] K8s service and endpoints integration
+   - [ ] "Cilium-proxy" for kubernetes (waiting for https://github.com/kubernetes/kubernetes/pull/35472)
+   - [ ] Modes
+     - [ ] Modular framework
+     - [X] Hash based
+     - [ ] RR
+     - [ ] Least connected
+ - [ ] Integration
+   - [ ] CNI (waiting for https://github.com/containernetworking/cni/pull/115)
+   - [ ] libnetwork (waiting for https://github.com/docker/libnetwork/pull/826)
+   - [ ] GCE (test and write tutorial for GCE)
