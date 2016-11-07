@@ -63,6 +63,8 @@ enum {
 	DBG_CAPTURE_FROM_OVERLAY,
 	DBG_CAPTURE_DELIVERY,
 	DBG_CAPTURE_FROM_LB,
+	DBG_CAPTURE_AFTER_V46,
+	DBG_CAPTURE_AFTER_V64,
 };
 
 static inline uint32_t __inline__ get_packet_marker(struct __sk_buff *skb)
