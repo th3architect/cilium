@@ -17,11 +17,31 @@ package daemon
 
 import (
 	"fmt"
-
 	"github.com/cilium/cilium/common/types"
 
 	ctx "golang.org/x/net/context"
+	k8sTypes "k8s.io/client-go/1.5/pkg/api/v1"
 )
+
+func (d *Daemon) getK8sStatus() types.Status {
+	var k8sStatus types.Status
+	if d.conf.IsK8sEnabled() {
+		if v, err := d.k8sClient.ComponentStatuses().Get("controller-manager"); err != nil {
+			k8sStatus = types.Status{Code: types.Failure, Msg: err.Error()}
+		} else if len(v.Conditions) == 0 {
+			k8sStatus = types.Status{Code: types.Warning, Msg: "Unable to retrieve controller-manager's kubernetes status"}
+		} else {
+			if v.Conditions[0].Status == k8sTypes.ConditionTrue {
+				k8sStatus = types.NewStatusOK(v.String())
+			} else {
+				k8sStatus = types.Status{Code: types.Failure, Msg: v.Conditions[0].Message}
+			}
+		}
+	} else {
+		k8sStatus = types.Status{Code: types.Disabled}
+	}
+	return k8sStatus
+}
 
 func (d *Daemon) GlobalStatus() (*types.StatusResponse, error) {
 	sr := types.StatusResponse{}
@@ -38,15 +58,7 @@ func (d *Daemon) GlobalStatus() (*types.StatusResponse, error) {
 		sr.Docker = types.NewStatusOK("")
 	}
 
-	if d.conf.IsK8sEnabled() {
-		if v, err := d.k8sClient.ServerVersion(); err != nil {
-			sr.Kubernetes = types.Status{Code: types.OK, Msg: err.Error()}
-		} else {
-			sr.Kubernetes = types.NewStatusOK(v.String())
-		}
-	} else {
-		sr.Kubernetes = types.Status{Code: types.Disabled}
-	}
+	sr.Kubernetes = d.getK8sStatus()
 
 	if sr.KVStore.Code != types.OK {
 		sr.Cilium = types.Status{Code: sr.KVStore.Code, Msg: "KVStore service is not ready!"}
